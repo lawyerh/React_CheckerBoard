@@ -9,7 +9,6 @@
         <script src="node_modules/react-dom/umd/react-dom.development.js"></script>
         <script src="node_modules/jquery/dist/jquery.js"></script>
         <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
     </head>
@@ -20,7 +19,18 @@
         <script>
             $(document).ready(function(){
 
-                function GetBoardData(){
+                //**********************//
+                //   React Components   //
+                //**********************//
+                
+                //Master Render call, accepts and renders any amount of components
+                function Render(components)
+                {
+                    ReactDOM.render(components, document.getElementById("app"))
+                }
+                
+                //Creates input field for row and column data
+                function BoardData(){
                 
                     const Rows = (props) =>
                     {    
@@ -29,12 +39,12 @@
     
                     const Columns = (props) =>
                     {
-                        return React.createElement("input", {className: 'form-control my-3', id: 'colums', placeholder: "Number of columns"}, null)
+                        return React.createElement("input", {className: 'form-control my-3', id: 'columns', placeholder: "Number of columns"}, null)
                     }
     
                     const Button = (props) =>
                     {
-                        return React.createElement("button", {className: 'btn btn-lg btn-success', id: 'submit'}, "Generate Board!")
+                        return React.createElement("button", {className: 'btn btn-lg btn-success mx-auto', id: 'submit'}, "Generate Board!")
                     }
                     const Container = (props) =>
                     {
@@ -43,14 +53,65 @@
                             Rows(),
                             Columns(),
                             Button()
-                        ])
+                        ]);
                     }
-                    ReactDOM.render(Container() , document.getElementById("app"))
+                    return Container();
                 }
 
-                GetBoardData()
+                //Create an errors div if invalid inputs
 
-                $()
+                function Errors()
+                {
+                    const ErrorText = (props) =>
+                    {
+                        return React.createElement("p", {className: 'text-primary h3'}, "Rows and columns must numbers. 1-20")
+                    }
+
+                    const CloseErrors = (props) =>
+                    {
+                        return React.createElement("button", {id: "close", className: 'btn btn-lg btn-success text-primary'}, "Got it.")
+                    }
+
+                    const ErrorBlock = (props) =>
+                    {
+                        return React.createElement("div", {className: 'col-4 bg-dark mx-auto border p-2 mt-3', id: 'errors'}, [ErrorText(), CloseErrors()])
+                    }
+                    return ErrorBlock()
+                }
+
+                Render(BoardData()) // draw user inputs to accept row/column data 
+
+                //************************//
+                //*******  jQuery  *******//
+                //************************//
+
+                $("#submit").click(function(){
+                    
+                    if(!Number($("#columns").val()) || !Number($("#rows").val()))
+                    {
+                        Render([BoardData(), Errors()])
+                        console.log("TYPE ERROR *********");
+                    }
+                    else
+                    {
+                        if((Number($("#columns").val()) > 20 || Number($("#columns").val()) < 1) && (Number($("#rows").val()) > 20 || Number($("#columns").val()) < 1))
+                        {
+                            Render([BoardData(), Errors()])
+                            console.log("RANGE ERROR *******");
+                        }
+                        else
+                        {
+                            console.log("success")
+                        }
+                    }
+                })
+
+                $(document).on("click", "#close", function(){
+                    console.log("CLICKED ME HAHAHAHA")
+                    $("#errors").fadeOut('slow', function(){
+                        Render(BoardData());
+                    })
+                });
             }); // doc ready
 
         
