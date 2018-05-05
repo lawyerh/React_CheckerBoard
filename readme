@@ -1,7 +1,7 @@
-First React Project
+First Major React Project
 
 Includes:
-    - Create reusable components
+    - Reusable components
     - Placing components based on user input
     - Using React with other technologies such as jQuery and bootstrap
     - Input Validations
