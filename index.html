@@ -26,7 +26,7 @@
                 //Master Render call, accepts and renders any amount of components
                 function Render(components)
                 {
-                    ReactDOM.render(components, document.getElementById("app"))
+                    ReactDOM.render(components, document.getElementById("app"));
                 }
                 
                 //Creates input field for row and column data
@@ -34,17 +34,28 @@
                 
                     const Rows = (props) =>
                     {    
-                        return React.createElement("input", {className: 'form-control my-3', id: 'rows', placeholder:"Number of rows"}, null)
+                        return React.createElement("input", {className: 'form-control my-3', id: 'rows', placeholder:"Number of columns"}, null);
                     }
-    
+
                     const Columns = (props) =>
                     {
-                        return React.createElement("input", {className: 'form-control my-3', id: 'columns', placeholder: "Number of columns"}, null)
+                        return React.createElement("input", {className: 'form-control my-3', id: 'columns', placeholder: "Number of rows"}, null);
                     }
+
+                    const ColorOne = (props) =>
+                    {
+                        return React.createElement("input", {className: 'form-control my-3', id: "color_one", placeholder: "Checker color one"})
+                    }
+
+                    const ColorTwo = (props) =>
+                    {
+                        return React.createElement("input", {className: 'form-control my-3', id: "color_two", placeholder: "Checker color two"})
+                    }
+    
     
                     const Button = (props) =>
                     {
-                        return React.createElement("button", {className: 'btn btn-lg btn-success mx-auto', id: 'submit'}, "Generate Board!")
+                        return React.createElement("button", {className: 'btn btn-lg btn-success mx-auto', id: 'submit'}, "Generate Board!");
                     }
                     const Container = (props) =>
                     {
@@ -52,6 +63,8 @@
                             React.createElement("h3", {className: 'mx-auto'}, "Generate a CheckerBoard!!"),
                             Rows(),
                             Columns(),
+                            ColorOne(),
+                            ColorTwo(),
                             Button()
                         ]);
                     }
@@ -64,19 +77,71 @@
                 {
                     const ErrorText = (props) =>
                     {
-                        return React.createElement("p", {className: 'text-primary h3'}, "Rows and columns must numbers. 1-20")
+                        return React.createElement("p", {className: 'text-primary h3'}, "Rows and columns must numbers. 1-20");
                     }
 
                     const CloseErrors = (props) =>
                     {
-                        return React.createElement("button", {id: "close", className: 'btn btn-lg btn-success text-primary'}, "Got it.")
+                        return React.createElement("button", {id: "close", className: 'btn btn-lg btn-success text-primary'}, "Got it.");
                     }
 
                     const ErrorBlock = (props) =>
                     {
-                        return React.createElement("div", {className: 'col-4 bg-dark mx-auto border p-2 mt-3', id: 'errors'}, [ErrorText(), CloseErrors()])
+                        return React.createElement("div", {className: 'col-4 bg-dark mx-auto border p-2 mt-3', id: 'errors'}, [ErrorText(), CloseErrors()]);
                     }
                     return ErrorBlock()
+                }
+
+                function DrawBoard(rows, columns, colorOne, colorTwo)
+                {
+                    const Block = (props) =>
+                    {
+                        console.log(props)
+                        return React.createElement("div", {style: {backgroundColor: props, height: 100, width: 100, display: 'block'}, className: 'border'}, null);
+                    }
+                    if(!colorOne)
+                    {
+                        colorOne = 'red';
+                    }
+                    if(!colorTwo)
+                    {
+                        colorTwo = "black";
+                    }
+                    
+                    let components = [];
+                    let Color;
+                    for(let r = 0; r < rows; r++)
+                    {
+                        if(r % 2 == 0)
+                        {
+                            Color = colorOne;
+                        }
+                        else
+                        {
+                            Color = colorTwo;
+                        }
+                        let blocks = [];
+                        for(let c = 0; c < columns; c++)
+                        {
+
+                            blocks.push(Block(Color));
+                            console.log(blocks)
+                            if(Color == colorOne)
+                            {
+                                Color = colorTwo;
+                            }
+                            else
+                            {
+                                Color = colorOne;
+                            }
+                        }
+                        const Row = (props) =>
+                        {
+                            return React.createElement("div", {style: {display: 'block'}}, blocks);
+                        }
+                        components.push(Row());
+                    }
+                    return components;
                 }
 
                 Render(BoardData()) // draw user inputs to accept row/column data 
@@ -89,19 +154,21 @@
                     
                     if(!Number($("#columns").val()) || !Number($("#rows").val()))
                     {
-                        Render([BoardData(), Errors()])
+                        Render([BoardData(), Errors()]);
                         console.log("TYPE ERROR *********");
                     }
                     else
                     {
                         if((Number($("#columns").val()) > 20 || Number($("#columns").val()) < 1) && (Number($("#rows").val()) > 20 || Number($("#rows").val()) < 1))
                         {
-                            Render([BoardData(), Errors()])
+                            Render([BoardData(), Errors()]);
                             console.log("RANGE ERROR *******");
                         }
                         else
                         {
-                            console.log("success")
+                            console.log("success");
+                            let components = DrawBoard($("#rows").val(), $("#columns").val(), $("#color_one").val(), $("#color_two").val());
+                            Render(components);
                         }
                     }
                 })
